@@ -55,3 +55,23 @@ void Route::printOut(){
         <<cur.param1<<"  "<<cur.param2<<"  "<<cur.param3<<"  "<<cur.param4 <<"      "<<uproute<<std::endl;
     }
 }
+
+void Route::transferWP(route_service::msg::WaypointArray &target){
+    route_service::msg::Waypoint wp_tmp;
+    for(int i=0; i<waypoints.size();i++){
+        wp_tmp.param1=waypoints[i].param1;
+        wp_tmp.param2=waypoints[i].param2;
+        wp_tmp.param3=waypoints[i].param3;
+        wp_tmp.param4=waypoints[i].param4;
+        wp_tmp.lattitude=waypoints[i].Lat_x;
+        wp_tmp.longitude=waypoints[i].Lon_y;
+        wp_tmp.altitude=waypoints[i].Alt_z;
+        wp_tmp.command=waypoints[i].command;
+        wp_tmp.iscurrent=waypoints[i].is_current;
+        wp_tmp.autocontinue=waypoints[i].autocontinue;
+        wp_tmp.frame=waypoints[i].frame;
+        target.waypoints.push_back(wp_tmp);
+    }
+
+    
+}

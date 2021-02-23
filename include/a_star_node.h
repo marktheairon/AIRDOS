@@ -5,11 +5,21 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include <math>
 #include <boost/filesystem.hpp>
 #include "rapidjson/document.h"
 
-#define PI=3.14159265
 
+#include "route_service/msg/waypoint.hpp"
+#include "route_service/msg/waypoint_array.hpp"
+#include "route_service/srv/route.hpp"
+
+#define PI 3.14159265
+#define ALT_DIFF 1
+
+
+boost::filesystem::path dbfolder="/home/airon/Desktop/RouteDatabase";
+std::string dbfolder_string="/home/airon/Desktop/RouteDatabase/";
 
 namespace A_star{
 
@@ -660,9 +670,10 @@ Route search_route(std::vector<Route> &routelist,Node &start,Node &end){
 }
 
 
-std::vector<Route> waypoint_assembly(std::vector<Node> &resultpath, std::vector<Route> &routelist){
-    std::vector<Route> route_final;
-
+route_service::msg::WaypointArray waypoint_assembly(std::vector<Node> &resultpath, std::vector<Route> &routelist){
+    
+    route_service::msg::WaypointArray route_final;
+    
     for(int i=0;i<resultpath.size()-1;i++){
         Node start_tmp, end_tmp;
         start_tmp=resultpath[i];
@@ -691,8 +702,7 @@ std::vector<Route> waypoint_assembly(std::vector<Node> &resultpath, std::vector<
         }
         else
         {   
-            
-            route_final.push_back(searchlist2[0]);
+            searchlist2[0].transferWP(route_final);
         }
             
     }

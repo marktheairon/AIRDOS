@@ -32,7 +32,7 @@ class Route{
         A_star::Node* endnode();
         bool* checkUproute();
         void printOut();
-
+        void transferWP(route_service::msg::WaypointArray &);
 
 
 
