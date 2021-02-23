@@ -1,0 +1,3 @@
+#	Connected to	cost	route
+	C-1		0.165	c1-c2`
+	B-4		0.279	b4-c2`

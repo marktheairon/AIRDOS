@@ -1,0 +1,11 @@
+float32       param1
+float32       param2
+float32       param3
+float32       param4
+float64     lattitude
+float64     longitude
+float64     altitude
+uint16    command
+bool        iscurrent
+bool        autocontinue
+uint8     frame

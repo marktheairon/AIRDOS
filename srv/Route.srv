@@ -1,0 +1,8 @@
+builtin_interface/Time stamp
+string start
+string end
+
+---
+
+builtin_interface/Time stamp
+WaypointArray route

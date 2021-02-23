@@ -1,0 +1,3 @@
+#	Connected to	cost	route
+	A-1		0.422	base-a1
+	A-2		0.461	base-a2
