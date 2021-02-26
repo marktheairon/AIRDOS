@@ -7,11 +7,10 @@
             },
             "includePath": [
                 "/home/airon/px4_ros_com_ros2/src/route_service/include/**",
-                "/usr/include/**",
-                "${workspaceFolder}/include",
+                "/usr/local/include/**",
+                "${workspaceFolder}/include/**",
                 "/opt/ros/dashing/include/**",
-                "~/px4_ros_com_ros2/build/**",
-                "~/px4_ros_com_ros2/build/route_service/**"
+                "~/px4_ros_com_ros2/install/**"
             ],
             "name": "ROS"
         }

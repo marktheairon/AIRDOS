@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <boost/filesystem.hpp>
+
 #include "a_star_node.h"
 
 struct Waypoint{
@@ -26,13 +27,13 @@ struct Waypoint{
 class Route{
     public:
         Route();
-        void setStartEnd(A_star::Node &,A_star::Node &);
+        void setStartEnd(A_star::Node & ,A_star::Node & );
         void pushbackWP(Waypoint);
         A_star::Node* startnode();
         A_star::Node* endnode();
         bool* checkUproute();
         void printOut();
-        void transferWP(route_service::msg::WaypointArray &);
+        void transferWP(route_service_msgs::msg::WaypointArray &);
 
 
 
@@ -57,12 +58,3 @@ class Route{
 
 
 
-
-
-
-
-
-
-
-
-#endif

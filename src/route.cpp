@@ -56,8 +56,8 @@ void Route::printOut(){
     }
 }
 
-void Route::transferWP(route_service::msg::WaypointArray &target){
-    route_service::msg::Waypoint wp_tmp;
+void Route::transferWP(route_service_msgs::msg::WaypointArray &target){
+    route_service_msgs::msg::Waypoint wp_tmp;
     for(int i=0; i<waypoints.size();i++){
         wp_tmp.param1=waypoints[i].param1;
         wp_tmp.param2=waypoints[i].param2;

@@ -17,20 +17,42 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(Boost 1.62.0 REQUIRED COMPONENTS system filesystem)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(route_service_msgs REQUIRED)
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-rosidl_generate_interfaces(${PROJECT_NAME}
-   "msg/Waypoint.msg"
-   "msg/WaypointArray.msg"
-   "srv/Route.srv"
-  DEPENDENCIES builtin_interfaces
 
- )
+
+include_directories(include)
+
+
+
+add_executable(routeservice src/main.cpp src/routeservice.cpp src/route.cpp src/a_star_node.cpp)
+ament_target_dependencies(routeservice
+  route_service_msgs
+  rclcpp
+)
+
+
+add_executable(routeclient src/routeclient.cpp)
+ament_target_dependencies(routeclient
+  route_service_msgs
+  rclcpp
+)
+
+target_link_libraries(routeservice
+   ${Boost_FILESYSTEM_LIBRARY}
+   ${Boost_SYSTEM_LIBRARY}
+   ${Boost_LIBRARIES}
+)
+
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

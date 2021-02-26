@@ -10,9 +10,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "route_service/msg/waypoint.hpp"
-#include "route_service/msg/waypoint_array.hpp"
-#include "route_service/srv/route.hpp"
+#include "route_service_msgs/msg/waypoint.hpp"
+#include "route_service_msgs/msg/waypoint_array.hpp"
+#include "route_service_msgs/srv/route.hpp"
 
 #include "node.h"
 #include "route.h"
@@ -20,17 +20,16 @@
 class RouteService : public rclcpp::Node
 {
 public:
-  using RouteRequest = route_service::srv::Route::Request;
-  using RouteResponse = route_service::srv::Route::Response;
-  using RouteOperator = route_service::srv::Route;
-  using Waypoint= route_service::msg::WaypointArray;
-  using WaypointArray= route_service::msg::WaypointArray;
+  using RouteRequest = route_service_msgs::srv::Route::Request;
+  using RouteResponse = route_service_msgs::srv::Route::Response;
+  using RouteOperator = route_service_msgs::srv::Route;
+  using WaypointArray= route_service_msgs::msg::WaypointArray;
 
   explicit RouteService(const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions());
   virtual ~RouteService();
 
 private:
-  int calculate_route(const std::string &, const std::string & );
+  WaypointArray calculate_route(const std::string &, const std::string & );
 
 
   rclcpp::Subscription<RouteRequest>::SharedPtr
@@ -42,10 +41,10 @@ private:
     std::string start_;
     std::string end_;
 
-    std::vector<A_star::Node> parsedlist;                                                                    //main data pool, do not delete or free                  
-    std::vector<A_star::Node> resultpath;
-    std::vector<Route> routelist;
-    std::vector<Route> resultroute;
+    std::vector<A_star::Node> parsedlist_;                                                                    //main data pool, do not delete or free                  
+    std::vector<A_star::Node> resultpath_;
+    std::vector<Route> routelist_;
+    WaypointArray resultroute_;
 
 };
 #endif  
