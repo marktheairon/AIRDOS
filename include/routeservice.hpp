@@ -14,7 +14,7 @@
 #include "route_service_msgs/msg/waypoint_array.hpp"
 #include "route_service_msgs/srv/route.hpp"
 
-#include "node.h"
+#include "a_star_node.h"
 #include "route.h"
 
 class RouteService : public rclcpp::Node

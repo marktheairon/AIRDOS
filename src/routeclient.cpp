@@ -70,14 +70,15 @@ int main(int argc, char * argv[])
   std::string start;
   std::string end;
 
-  std::cout<<"type start end"<<std::endl;
-  std::cin>>start>>end;
+  
 
   
   while (rclcpp::ok()) {
+    std::cout<<"type start end"<<std::endl;
+    std::cin>>start>>end;
     rclcpp::spin_some(route_client_);
     route_client_->send_request(start,end);
-    break;
+    
   }
 
   return 0;
