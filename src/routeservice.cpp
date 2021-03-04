@@ -41,7 +41,7 @@ double dist_btw_lla_points(double lat_origin,double lon_origin, double lat_far,d
 
     double a=sin(delta_phi/2)*sin(delta_phi/2)+
              cos(deg2rad(lat_origin))*cos(deg2rad(lat_far))*
-             sin(delta_lambda/2)*sin(delta_lambda);
+             sin(delta_lambda/2)*sin(delta_lambda/2);
 
     double c=2*atan2(sqrt(a),sqrt(1-a));
     double d=R*c;
@@ -400,18 +400,18 @@ void parse_route_file(std::vector<A_star::Node> &nodelist,std::vector<Route> &ro
 }                            
 
 void check_open_close(std::vector<A_star::NodeCosts>openlist ,std::vector<A_star::NodeCosts> closedlist){
-    std::cout<<"closedlist"<<std::endl;
+    std::cout<<"closedlist:"<<std::endl;
     for(auto &current:closedlist)
     {   
         std::cout<< current.node.getName()<<"   ";
     }
-    std::cout<<std::endl;
+    std::cout<<"    "<<std::endl;
     for(auto &current:closedlist)
     {   
         std::cout<< current.parent.getName()<<"   ";
     }
-    std::cout<<std::endl;
-    std::cout<<"remain openlist"<<std::endl;
+    std::cout<<std::endl<<std::endl;;
+    std::cout<<"openlist:"<<std::endl;
     for(auto &current:openlist)
     {   
         std::cout<< current.node.getName()<<"   ";
@@ -442,16 +442,33 @@ void closelist_to_openlist(std::vector<A_star::Node> &nodelist, std::vector<A_st
 
             std::cout<<"connected node information about  :"<<closedlist.back().node.getName()<<std::endl;
 
-            for(int i=0;i<connected_list.size();i++)                                            //for each connection in connected_list cal full cost and designate parent
+            for(int i=0;i<connected_list.size();i++)                                            //for each connection in connected_list calculate full cost and designate parent
             {   
                 A_star::NodeCosts opentmp;
-                opentmp={set_from_nodelist(nodelist,connected_list[i]),0,connected_cost[i]+closedlist.back().G_cost,cal_heuristic_cost(set_from_nodelist(nodelist,connected_list[i]),arrival),set_from_nodelist(nodelist,closedlist.back().node)};
+                opentmp={set_from_nodelist(nodelist,connected_list[i]),                                         //node
+                            0,                                                                                  //Full cost, calculate later
+                            connected_cost[i]+closedlist.back().G_cost,                                         //G score, path length
+                            cal_heuristic_cost(set_from_nodelist(nodelist,connected_list[i]),arrival),          //H score, direct distance
+                            set_from_nodelist(nodelist,closedlist.back().node)                                  //parent node
+                            };
                 opentmp.F_cost=opentmp.G_cost+opentmp.H_cost;
 
                 std::cout<<"node: "<<opentmp.node.getName()<<"  parent: "<<opentmp.parent.getName()<< "  F  G  H  :"<<opentmp.F_cost<<"    "<<opentmp.G_cost<<"    "<<opentmp.H_cost<<std::endl;
                 tmplist.push_back(opentmp);                                                    //create tmplist
             }
 
+
+
+            for(int i=0;i<tmplist.size();i++)
+            {
+                if(tmplist[i].node.getName()==closedlist.back().parent.getName())
+                {
+                    std::cout<<"Node : "<<tmplist[i].node.getName()<<" is parent node, delete"<<std::endl;
+                    tmplist.erase(tmplist.begin()+i);    
+                }
+            }
+
+/*
            if(closedlist.size()!=1)                                                             //pass parent check at initial openlist set
            { 
                 for(int i=0;i<tmplist.size();i++)                                                   //parent check for each element in tmplist
@@ -460,34 +477,54 @@ void closelist_to_openlist(std::vector<A_star::Node> &nodelist, std::vector<A_st
                     {
                         if(tmplist[i].node.getName()==close_cur.node.getName())                             //if closed list name matches to tmplist element name
                         {
-                            std::cout<<"this node "<<tmplist[i].node.getName()<<" already placed in closed list, delete"<<std::endl;
+                            
                             tmplist.erase(tmplist.begin()+i);                                       //erase that tmplist element, because it's just reverse route
                         }
                         
                     }
                 }
            }
+*/
+
 
 
             for(auto &tmp_cur:tmplist)                                                                //Check openlist overlap
             {
-                bool same=false;
-                for(auto &open_cur:openlist)
+
+                if(openlist.size()!=0)
                 {
-                    if(open_cur.node.getName()==tmp_cur.node.getName() && open_cur.F_cost>tmp_cur.F_cost)
+                    for(auto &open_cur:openlist)
                     {
-                        std::cout<<"renewing Already exist node on openlist: "<<open_cur.node.getName()
-                                 <<"   "<<open_cur.F_cost<<"  ->  "<<tmp_cur.F_cost <<std::endl;
-                        open_cur.F_cost=tmp_cur.F_cost;
-                        open_cur.G_cost=tmp_cur.G_cost;
-                        open_cur.H_cost=tmp_cur.H_cost;
-                        open_cur.parent=tmp_cur.parent;
-                        
-                        same=true;
+                        if(open_cur.node.getName()==tmp_cur.node.getName() && open_cur.F_cost>tmp_cur.F_cost)
+                        {
+                            std::cout<<"Recalculating Cost of : "<<open_cur.node.getName()
+                                    <<"   "<<open_cur.F_cost<<"  ->  "<<tmp_cur.F_cost <<std::endl;
+                            open_cur.F_cost=tmp_cur.F_cost;
+                            open_cur.G_cost=tmp_cur.G_cost;
+                            open_cur.H_cost=tmp_cur.H_cost;
+                            open_cur.parent=tmp_cur.parent;
+                            
+                        }
+                        else if(open_cur.node.getName()==tmp_cur.node.getName() && open_cur.F_cost<tmp_cur.F_cost)
+                        {
+                            std::cout<<"Recalculated Cost of :"<<open_cur.node.getName()<<"  But couldn't beat former cost"<<std::endl;
+                        }
+                        else
+                        {
+                            openlist.push_back(tmp_cur);
+                        }
+                    
                     }
+                
                 }   
-                if(!same){openlist.push_back(tmp_cur);}
+
+                else
+                {
+                    openlist.push_back(tmp_cur);
+                }
             }
+
+     
             
         
 }
@@ -513,17 +550,16 @@ void cal_min_cost_push(std::vector<A_star::NodeCosts>&openlist,std::vector<A_sta
         }
     }
 
-    std::cout<<"open close before erase lowest"<<std::endl;
     check_open_close(openlist,closedlist);
-    
+
+    std::cout<<"Minimum : "<<openlist[min_index].node.getName()<<" added to closed list"<<std::endl;
 
     closedlist.push_back(openlist[min_index]);
     
     openlist.erase(openlist.begin()+min_index);
     
-
-    std::cout<<"open close after erase lowest"<<std::endl;
     check_open_close(openlist,closedlist);
+
 }
 
 int cal_cost(std::vector<A_star::Node> &nodelist, std::vector<A_star::NodeCosts> &openlist,std::vector<A_star::NodeCosts> &closedlist,A_star::Node &departure, A_star::Node &arrival){
@@ -735,7 +771,11 @@ RouteService::~RouteService()
 
 route_service_msgs::msg::WaypointArray RouteService::calculate_route(const std::string &_start, const std::string &_end)
 {
+    parsedlist_.clear();
+    resultpath_.clear();
+    routelist_.clear();
     
+
     parse_node_file("node.txt",parsedlist_);
   
     parse_connection_file(parsedlist_);
