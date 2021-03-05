@@ -49,6 +49,21 @@ double dist_btw_lla_points(double lat_origin,double lon_origin, double lat_far,d
     return d;
 }
 
+float bearing_btw_lla_points(double lat_origin,double lon_origin, double lat_far,double lon_far){
+    float theta1 =deg2rad(lat_origin);
+    float theta2 =deg2rad(lat_far);
+    float delta1 =deg2rad(lat_far-lat_origin);
+    float delta2 =deg2rad(lon_far-lon_origin);
+
+    float y=sin(delta2)*cos(theta2);
+    float x=cos(theta1)*sin(theta2)-sin(theta1)*cos(theta2)*cos(delta2);
+    float bearing=atan2(y,x);
+    bearing=rad2deg(bearing);
+    bearing=(((int)bearing+360)%360);
+
+    return bearing;
+}
+
 std::vector<std::string> tokenize_getline(const std::string& data, const char delimiter = '/') {
 	std::vector<std::string> result;
 	std::string token;
@@ -361,6 +376,7 @@ void parse_route_file(std::vector<A_star::Node> &nodelist,std::vector<Route> &ro
                             
                             const Value& waypoint=items[i];
                             const Value& param=waypoint["params"];
+                            const Value& command=waypoint["command"];
 
                             wp_tmp.param1=param[0].GetFloat();
                             wp_tmp.param2=param[1].GetFloat();
@@ -380,7 +396,7 @@ void parse_route_file(std::vector<A_star::Node> &nodelist,std::vector<Route> &ro
                             wp_tmp.autocontinue=true;
                             wp_tmp.is_current=false;
                             wp_tmp.frame=0;
-                            wp_tmp.command=16;
+                            wp_tmp.command=command.GetInt();
                             route.pushbackWP(wp_tmp);
                         
                         }
@@ -420,8 +436,14 @@ void check_open_close(std::vector<A_star::NodeCosts>openlist ,std::vector<A_star
 
 }
 
-float cal_heuristic_cost(A_star::Node now, A_star::Node arrival){
-    return dist_btw_lla_points(now.getLatitude(),now.getLongitude(),arrival.getLatitude(),arrival.getLongitude())/1000.0;
+float cal_heuristic_cost(A_star::Node before, A_star::Node now, A_star::Node start, A_star::Node arrival){
+    float direc_factor=4;
+    float distance_score = dist_btw_lla_points(now.getLatitude(),now.getLongitude(),arrival.getLatitude(),arrival.getLongitude())/1000.0;
+    float direction_score = bearing_btw_lla_points(before.getLatitude(),before.getLongitude(),arrival.getLatitude(),arrival.getLongitude())
+                                -bearing_btw_lla_points(now.getLatitude(),now.getLongitude(),arrival.getLatitude(),arrival.getLongitude());
+    direction_score=abs(direction_score)/(180*direc_factor);
+    std::cout<<"dist:  "<<distance_score<<"   direc:  "<<direction_score<<std::endl;
+    return distance_score+direction_score ;
 }
 
 A_star::Node set_from_nodelist(std::vector<A_star::Node> &nodelist, A_star::Node target){
@@ -433,7 +455,7 @@ A_star::Node set_from_nodelist(std::vector<A_star::Node> &nodelist, A_star::Node
     }
 }
 
-void closelist_to_openlist(std::vector<A_star::Node> &nodelist, std::vector<A_star::NodeCosts> &openlist,std::vector<A_star::NodeCosts> &closedlist,A_star::Node & arrival){
+void closelist_to_openlist(std::vector<A_star::Node> &nodelist, std::vector<A_star::NodeCosts> &openlist,std::vector<A_star::NodeCosts> &closedlist,A_star::Node & start,A_star::Node & arrival){
 
 
             std::vector<A_star::Node> connected_list    =closedlist.back().node.getConnection();           //set 3 vector contain current node's connection information
@@ -448,7 +470,7 @@ void closelist_to_openlist(std::vector<A_star::Node> &nodelist, std::vector<A_st
                 opentmp={set_from_nodelist(nodelist,connected_list[i]),                                         //node
                             0,                                                                                  //Full cost, calculate later
                             connected_cost[i]+closedlist.back().G_cost,                                         //G score, path length
-                            cal_heuristic_cost(set_from_nodelist(nodelist,connected_list[i]),arrival),          //H score, direct distance
+                            cal_heuristic_cost(closedlist.back().node,set_from_nodelist(nodelist,connected_list[i]),start,arrival),          //H score, direct distance
                             set_from_nodelist(nodelist,closedlist.back().node)                                  //parent node
                             };
                 opentmp.F_cost=opentmp.G_cost+opentmp.H_cost;
@@ -485,24 +507,139 @@ void closelist_to_openlist(std::vector<A_star::Node> &nodelist, std::vector<A_st
                 }
            }
 */
+            std::vector<A_star::NodeCosts> openlist_copy =openlist;
+            
+            std::vector<A_star::NodeCosts> tmplist_item_to_add;
+            std::vector<A_star::NodeCosts> openlist_item_to_renew;
 
-
+            check_open_close(openlist,closedlist);
 
             for(auto &tmp_cur:tmplist)                                                                //Check openlist overlap
             {
-
-                if(openlist.size()!=0)
+                if(openlist_copy.size()!=0)
                 {
-                    for(auto &open_cur:openlist)
+                    bool openlist_has_tmp_cur =false;
+                    int renew_index;
+                    for(int i=0;i<openlist.size();i++)
+                    {
+                        if(openlist[i].node.getName()==tmp_cur.node.getName())
+                        {
+                            openlist_has_tmp_cur=true;
+                            renew_index=i;
+                        }
+                    }
+                    
+                    if(openlist_has_tmp_cur && openlist[renew_index].F_cost>tmp_cur.F_cost)
+                    {
+                        std::cout<<"Recalculating Cost of : "<<openlist[renew_index].node.getName()
+                                     <<"   "<<openlist[renew_index].F_cost<<"  ->  "<<tmp_cur.F_cost <<std::endl;
+                        openlist[renew_index].F_cost=tmp_cur.F_cost;
+                        openlist[renew_index].G_cost=tmp_cur.G_cost;
+                        openlist[renew_index].H_cost=tmp_cur.H_cost;
+                        openlist[renew_index].parent=tmp_cur.parent;
+                    }
+                    
+                    else if(openlist_has_tmp_cur && openlist[renew_index].F_cost<=tmp_cur.F_cost)
+                    {
+                        std::cout<<"Recalculated Cost of :"<<openlist[renew_index].node.getName()<<"  But couldn't beat former cost"<<std::endl;
+                    }
+
+                    else
+                    {
+                        tmplist_item_to_add.push_back(tmp_cur);
+                    }
+                }
+                else
+                {
+                    tmplist_item_to_add.push_back(tmp_cur);
+                }
+            }
+            
+            for(auto &item_to_add:tmplist_item_to_add)
+            {
+                openlist.push_back(item_to_add);
+            }
+/*
+                if(openlist_copy.size()!=0)
+                {
+                    bool tmp_cur_added =false;
+                    for(auto &open_cur:openlist_copy)
+                    {
+                        if(open_cur.node.getName()==tmp_cur.node.getName() && open_cur.F_cost>tmp_cur.F_cost)
+                        {
+                            std::cout<<"Recalculating Cost of : "<<open_cur.node.getName()
+                                     <<"   "<<open_cur.F_cost<<"  ->  "<<tmp_cur.F_cost <<std::endl;
+                            
+                            openlist_item_to_renew.push_back(tmp_cur);
+
+                        }
+                        else if(open_cur.node.getName()==tmp_cur.node.getName() && open_cur.F_cost<tmp_cur.F_cost)
+                        {
+                            std::cout<<"Recalculated Cost of :"<<open_cur.node.getName()<<"  But couldn't beat former cost"<<std::endl;
+                        }
+                        else
+                        {
+                            if(tmp_cur_added==false)
+                            {
+                                tmplist_item_to_add.push_back(tmp_cur);
+                                tmp_cur_added=true;
+                            }
+                        }
+
+                    }        
+                }
+    
+
+                else
+                {
+                    tmplist_item_to_add.push_back(tmp_cur);
+                }
+            
+            }
+        
+            for(auto &item_to_add:tmplist_item_to_add)
+            {
+                openlist.push_back(item_to_add);
+            }
+
+            for(auto &item_to_renew:openlist_item_to_renew)
+            {
+                for(auto & openlist_origin:openlist)
+                {
+                    if(openlist_origin.node.getName()==item_to_renew.node.getName())
+                    {
+                        openlist_origin.F_cost=item_to_renew.F_cost;
+                        openlist_origin.G_cost=item_to_renew.G_cost;
+                        openlist_origin.H_cost=item_to_renew.H_cost;
+                        openlist_origin.parent=item_to_renew.parent;
+                    }
+                }
+            }
+*/ 
+/*
+            for(auto &tmp_cur:tmplist)                                                                //Check openlist overlap
+            {
+
+                if(openlist_copy.size()!=0)
+                {
+                    for(auto &open_cur:openlist_copy)
                     {
                         if(open_cur.node.getName()==tmp_cur.node.getName() && open_cur.F_cost>tmp_cur.F_cost)
                         {
                             std::cout<<"Recalculating Cost of : "<<open_cur.node.getName()
                                     <<"   "<<open_cur.F_cost<<"  ->  "<<tmp_cur.F_cost <<std::endl;
-                            open_cur.F_cost=tmp_cur.F_cost;
-                            open_cur.G_cost=tmp_cur.G_cost;
-                            open_cur.H_cost=tmp_cur.H_cost;
-                            open_cur.parent=tmp_cur.parent;
+                            
+                            for(auto & openlist_origin:openlist)
+                            {
+                                if(openlist_origin.node.getName()==tmp_cur.node.getName())
+                                {
+                                    openlist_origin.F_cost=tmp_cur.F_cost;
+                                    openlist_origin.G_cost=tmp_cur.G_cost;
+                                    openlist_origin.H_cost=tmp_cur.H_cost;
+                                    openlist_origin.parent=tmp_cur.parent;
+                                }
+                            }
+
                             
                         }
                         else if(open_cur.node.getName()==tmp_cur.node.getName() && open_cur.F_cost<tmp_cur.F_cost)
@@ -512,6 +649,7 @@ void closelist_to_openlist(std::vector<A_star::Node> &nodelist, std::vector<A_st
                         else
                         {
                             openlist.push_back(tmp_cur);
+                            
                         }
                     
                     }
@@ -523,7 +661,7 @@ void closelist_to_openlist(std::vector<A_star::Node> &nodelist, std::vector<A_st
                     openlist.push_back(tmp_cur);
                 }
             }
-
+*/
      
             
         
@@ -578,7 +716,7 @@ int cal_cost(std::vector<A_star::Node> &nodelist, std::vector<A_star::NodeCosts>
         }
         else
         {
-            closelist_to_openlist(nodelist,openlist,closedlist,arrival);
+            closelist_to_openlist(nodelist,openlist,closedlist,departure,arrival);
         }
 
 
@@ -617,19 +755,82 @@ int a_star_path(std::vector<A_star::Node> &nodelist,std::vector<A_star::Node> &p
                                        
 
     if(cal_cost(nodelist,openlist,closedlist,departure,arrival))                               //iterate A* open-close list calculation
-    {
+    {   
+        
+        A_star::Node node, parent;
+        std::vector<std::vector<A_star::NodeCosts>> routeTree;
+        //node=closedlist.back().node;
+       // path.push_back(node);
+        parent=closedlist.back().parent;
+/*
+        for(int i=closedlist.size()-1;i>=0;i--)
+        {   
+
+            std::vector<int> index;
+            for(int j=i-1;j>=0;j--)
+            {
+                if(closedlist[j].node.getName()==closedlist[i].parent.getName())
+                {
+                    index.push_back(j);
+                    if(index.size()==1)
+                    {
+
+                    }
+                }
+            }
+        }
+*/
+
+
+
+        for(int i=closedlist.size()-1;i>=0;i--)
+        {
+            A_star::NodeCosts closed_cur=closedlist[i];
+
+            if(closed_cur.node.getName()==start && closed_cur.node.getName()==parent.getName() )
+            {
+                path.push_back(closed_cur.node);
+                break;
+            }
+            else if(closed_cur.node.getName()==parent.getName())
+            {
+                path.push_back(closed_cur.node);
+                parent=closed_cur.parent;       
+            }
+            
+        }
+        path.insert(path.begin(),arrival);
+        std::reverse(path.begin(),path.end());
+
+/*
+        path.push_back(closedlist[closedlist.size()-1].node);
+        for(auto & path_cur:path)
+        {
+            path_cur
+        }
         for(int closed_cur=closedlist.size()-1;closed_cur>=0;closed_cur--)                      //from closedlist back
         {
-            path.push_back(closedlist[closed_cur].parent);
+            if(closed_cur==closedlist.size()-1)
+            {
+                path.push_back(closedlist[closed_cur].node);
+            }
+            else if(closedlist[closed_cur+1].parent.getName()==closedlist[closed_cur].node.getName())
+            {
+                path.push_back(closedlist[closed_cur].node);
+            }
+            else
+            {
+
+            }
+            closedlist[closed_cur].pare
+            
             if(closedlist[closed_cur].parent.getName()==departure.getName()) break;
         }
         path.insert(path.begin(),arrival);
         std::reverse(path.begin(),path.end());
+*/
     }
-    else
-    {
 
-    }
     
 
     /*
@@ -721,12 +922,12 @@ RouteService::RouteService(const rclcpp::NodeOptions & node_options)
 {
   RCLCPP_INFO(this->get_logger(), "Run route_service_server");
 
-  this->declare_parameter("qos_depth", 10);
+  this->declare_parameter("qos_depth", 100);
   int8_t qos_depth = 0;
   this->get_parameter("qos_depth", qos_depth);
 
   const auto QOS_RKL10V =
-    rclcpp::QoS(rclcpp::KeepLast(qos_depth)).reliable().durability_volatile();
+    rclcpp::QoS(rclcpp::KeepLast(qos_depth)).reliable().transient_local();//durability_volatile();
 
   route_request_subscriber_ = this->create_subscription<RouteRequest>(
     "route_request",
