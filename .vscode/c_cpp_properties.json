@@ -6,7 +6,7 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
-                "/home/airon/px4_ros_com_ros2/src/route_service/include/**",
+                "/home/yjcom/px4_ros_com_ros2/src/route_service/include/**",
                 "/usr/local/include/**",
                 "${workspaceFolder}/include/**",
                 "/opt/ros/dashing/include/**",
