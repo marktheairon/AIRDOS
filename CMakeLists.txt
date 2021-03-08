@@ -33,14 +33,19 @@ include_directories(include)
 
 
 
-add_executable(routeservice src/routeservice.cpp src/route.cpp src/a_star_node.cpp)
+add_executable(routeservice 
+	src/route_service_server/routeservice.cpp 
+	src/route.cpp 
+	src/a_star_node.cpp)
 ament_target_dependencies(routeservice
   route_service_msgs
   rclcpp
 )
 
 
-add_executable(routeclient src/routeclient.cpp)
+add_executable(routeclient 
+	src/route_service_client/routeclient.cpp
+)
 ament_target_dependencies(routeclient
   route_service_msgs
   rclcpp

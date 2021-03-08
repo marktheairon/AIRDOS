@@ -24,7 +24,7 @@
 #include "routeservice.hpp"
 
 
-
+/*
 void print_help()
 {
   printf("For ROS 2 topic subscriber, service server, action server rclcpp examples:\n");
@@ -52,3 +52,4 @@ int main(int argc, char * argv[])
 
   return 0;
 }
+*/
