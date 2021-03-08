@@ -994,4 +994,17 @@ route_service_msgs::msg::WaypointArray RouteService::calculate_route(const std::
 
 
 
+int main(int argc, char * argv[])
+{
 
+  rclcpp::init(argc, argv);
+
+  auto routeservice = std::make_shared<RouteService>();
+
+  rclcpp::spin(routeservice);
+
+  rclcpp::shutdown();
+
+
+  return 0;
+}
