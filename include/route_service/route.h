@@ -7,7 +7,7 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 
-#include "a_star_node.h"
+#include "route_service/a_star_node.h"
 
 struct Waypoint{
     float       param1;

@@ -7,26 +7,33 @@
 #include <utility>
 #include <random>
 
+
+
 #include "rclcpp/rclcpp.hpp"
+#include "visibility_control.h"
+
 #include "route_service_msgs/srv/route.hpp"
+
+namespace route_service_client_composition
+{
 
 
 class RouteClient : public rclcpp::Node
 {
     public:
-        using RouteOperator = route_service_msgs::srv::Route;
+        COMPOSITION_PUBLIC
 
         explicit RouteClient(const rclcpp::NodeOptions & node_options =rclcpp::NodeOptions());
         virtual ~RouteClient();
 
-        void send_request(std::string, std::string);
+        route_service_msgs::msg::WaypointArray send_request(std::string, std::string);
 
     private:
-        rclcpp::Client<RouteOperator>::SharedPtr route_service_client_;
+        rclcpp::Client<route_service_msgs::srv::Route>::SharedPtr route_service_client_;
         route_service_msgs::msg::WaypointArray result_WP_array;
 };
 
-
+/*
 
 RouteClient::RouteClient(const rclcpp::NodeOptions & node_options)
 : Node("route_client",node_options)
@@ -58,11 +65,11 @@ void RouteClient::send_request(std::string _start, std::string _end){
         auto response=future.get();
         RCLCPP_INFO(this->get_logger(),"Receiced time: ",response->stamp);
         result_WP_array=response->route;
-        /*
+        
         for(auto & cur:result_WP_array.waypoints){
             std::cout<<cur.command<<"    lla:  "<<cur.lattitude<<"   "<<cur.longitude<<"   "<<cur.altitude<<"   "<<"param 1 2 3 4: "<<
                     cur.param1<<"   "<<cur.param2<<"   "<<cur.param3<<"   "<<cur.param4<<std::endl;
-        }*/
+        }
         //return result_WP_array;
     };
 
@@ -70,9 +77,9 @@ void RouteClient::send_request(std::string _start, std::string _end){
         route_service_client_->async_send_request(request, response_received_callback);
 
 }
+*/
 
-
-
+}
 
 
 

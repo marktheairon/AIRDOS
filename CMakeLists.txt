@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(route_service)
+project(airdos)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -18,6 +18,8 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(rcutils REQUIRED)
 find_package(Boost 1.62.0 REQUIRED COMPONENTS system filesystem)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
@@ -29,24 +31,19 @@ find_package(route_service_msgs REQUIRED)
 
 
 
+
+
 include_directories(include)
 
 
+set(node_plugins "")
+
 
 add_executable(routeservice 
-	src/route_service_server/routeservice.cpp 
-	src/route.cpp 
-	src/a_star_node.cpp)
+	src/route_service/server/routeservice.cpp 
+	src/route_service/route.cpp 
+	src/route_service/a_star_node.cpp)
 ament_target_dependencies(routeservice
-  route_service_msgs
-  rclcpp
-)
-
-
-add_executable(routeclient 
-	src/route_service_client/routeclient.cpp
-)
-ament_target_dependencies(routeclient
   route_service_msgs
   rclcpp
 )
@@ -56,6 +53,47 @@ target_link_libraries(routeservice
    ${Boost_SYSTEM_LIBRARY}
    ${Boost_LIBRARIES}
 )
+
+
+add_library(routeclient SHARED
+  src/route_service/client/routeclient.cpp)
+target_compile_definitions(routeclient
+  PRIVATE "COMPOSITION_BUILDING_DLL")
+ament_target_dependencies(routeclient
+  route_service_msgs
+  class_loader
+  rclcpp
+)
+rclcpp_components_register_nodes(routeclient "route_service_client_composition::RouteClient")
+set(node_plugins "${node_plugins}route_service_client_composition::RouteClient;$<TARGET_FILE:routeclient>\n")
+
+
+
+
+add_executable(delivery_operator
+  src/delivery_operator/delivery_operator.cpp)
+target_link_libraries(delivery_operator
+  routeclient)
+ament_target_dependencies(delivery_operator
+  rclcpp)
+
+
+install(TARGETS
+  
+  routeclient
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
+
+
+install(TARGETS
+  delivery_operator
+  routeservice
+  DESTINATION lib/${PROJECT_NAME})
+
+
+
+
 
 
 
@@ -69,5 +107,5 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
+ament_export_dependencies(class_loader)
 ament_package()
