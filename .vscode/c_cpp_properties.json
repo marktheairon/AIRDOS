@@ -6,11 +6,12 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "includePath": [
-                "/home/yjcom/px4_ros_com_ros2/src/route_service/include/**",
+                "/home/airon/px4_ros_com_ros2/src/**",
                 "/usr/local/include/**",
                 "${workspaceFolder}/include/**",
                 "/opt/ros/dashing/include/**",
-                "~/px4_ros_com_ros2/install/**"
+                "~/px4_ros_com_ros2/install/**",
+                "~/px4_ros_com_ros2/build/**"
             ],
             "name": "ROS"
         }

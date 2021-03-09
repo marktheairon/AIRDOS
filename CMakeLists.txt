@@ -72,10 +72,9 @@ set(node_plugins "${node_plugins}route_service_client_composition::RouteClient;$
 
 add_executable(delivery_operator
   src/delivery_operator/delivery_operator.cpp)
-target_link_libraries(delivery_operator
-  routeclient)
 ament_target_dependencies(delivery_operator
-  rclcpp)
+   route_service_msgs
+   rclcpp)
 
 
 install(TARGETS

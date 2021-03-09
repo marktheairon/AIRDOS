@@ -904,9 +904,42 @@ route_service_msgs::msg::WaypointArray waypoint_assembly(std::vector<A_star::Nod
         else
         {   
             searchlist2[0].transferWP(route_final);
-        }
-            
+        }   
     }
+    
+
+    route_service_msgs::msg::Waypoint wp_tmp;
+    wp_tmp.param1=0;
+    wp_tmp.param2=0;
+    wp_tmp.param3=0;
+    wp_tmp.param4=NAN;
+    wp_tmp.lattitude=resultpath[0].getLatitude();
+    wp_tmp.longitude=resultpath[0].getLongitude();
+    wp_tmp.altitude=resultpath[0].getAltitude();
+    wp_tmp.command=22;                                                            //MAV_CMD_NAV_TAKEOFF (22)
+    wp_tmp.iscurrent=false;
+    wp_tmp.autocontinue=true;
+    wp_tmp.frame=3;
+    route_final.waypoints.insert(route_final.waypoints.begin(),wp_tmp);
+
+
+    route_service_msgs::msg::Waypoint wp_tmp;
+    wp_tmp.param1=0;
+    wp_tmp.param2=2;
+    wp_tmp.param3=0;
+    wp_tmp.param4=0;                                                            //SET LANDING HDG set to 0deg (north)
+    wp_tmp.lattitude=resultpath[resultpath.size()-1].getLatitude();
+    wp_tmp.longitude=resultpath[resultpath.size()-1].getLongitude();
+    wp_tmp.altitude=resultpath[resultpath.size()-1].getAltitude();
+    wp_tmp.command=21;                                                            //MAV_CMD_NAV_TAKEOFF (22)
+    wp_tmp.iscurrent=false;
+    wp_tmp.autocontinue=true;
+    wp_tmp.frame=3;
+    route_final.waypoints.push_back(wp_tmp);
+    
+
+
+
 
     return route_final;
 

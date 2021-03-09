@@ -3,9 +3,7 @@
 #include <cstdlib>
 
 #include "delivery_operator/delivery_operator.hpp"
-#include "route_service_msgs/msg/route_command.hpp"
-#include "route_service/routeclient.hpp"
-#include "std_msgs/msg/string.hpp"
+
 #include "rclcpp/rclcpp.hpp"
 
 using namespace std::chrono_literals;
@@ -24,6 +22,11 @@ DeliveryOperator::DeliveryOperator(const rclcpp::NodeOptions & node_options)
         }
         RCLCPP_INFO(this->get_logger(),"Service not available... waiting...");
     }
+}
+
+DeliveryOperator::~DeliveryOperator()
+{
+
 }
 
 void DeliveryOperator::cmd_callback(route_service_msgs::msg::RouteCommand::SharedPtr msg)
@@ -57,26 +60,41 @@ class MinimalPublisher : public rclcpp::Node
     : Node("minimal_publisher"), count_(0)
     {
       publisher_ = this->create_publisher<route_service_msgs::msg::RouteCommand>("route_command", 10);
-      std::bind()
+      timer_ = this->create_wall_timer(
+      100ms, std::bind(&MinimalPublisher::timer_callback, this));
     }
 
   private:
     void timer_callback()
     {
       auto message = route_service_msgs::msg::RouteCommand();
-      message.startpoint = "Hello, world! " + std::to_string(count_++);
-      RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
+      message.startpoint="Base";
+      std::vector<std::string> destination ={"A-1","A-2","A-3","A-4","B-1","B-2","B-3","B-4","C-1","C-2","C-3"};
+      message.endpoint=destination[index];
+      RCLCPP_INFO(this->get_logger(), "Publishing: '%s'  '%s' ", message.startpoint.c_str(),message.endpoint.c_str());
       publisher_->publish(message);
+      index++;
+      if(index>=destination.size())
+      {
+        index=0;
+      }
+      
     }
+    int index=0;
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Publisher<route_service_msgs::msg::RouteCommand>::SharedPtr publisher_;
     size_t count_;
 };
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<MinimalPublisher>());
+  rclcpp::executors::SingleThreadedExecutor exec;
+  auto node1 = std::make_shared<DeliveryOperator>();
+  auto node2 = std::make_shared<MinimalPublisher>();
+  exec.add_node(node1);
+  exec.add_node(node2);
+  exec.spin();
   rclcpp::shutdown();
   return 0;
 }
