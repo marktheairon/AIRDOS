@@ -77,6 +77,13 @@ ament_target_dependencies(delivery_operator
    rclcpp)
 
 
+add_executable(mission_pub
+  src/mission_control/mission_pub.cpp)
+ament_target_dependencies(mission_pub
+   route_service_msgs
+   rclcpp)
+
+
 install(TARGETS
   
   routeclient

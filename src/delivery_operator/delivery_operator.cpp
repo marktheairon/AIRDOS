@@ -91,9 +91,9 @@ int main(int argc, char * argv[])
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor exec;
   auto node1 = std::make_shared<DeliveryOperator>();
-  auto node2 = std::make_shared<MinimalPublisher>();
+  //auto node2 = std::make_shared<MinimalPublisher>();
   exec.add_node(node1);
-  exec.add_node(node2);
+  //exec.add_node(node2);
   exec.spin();
   rclcpp::shutdown();
   return 0;
