@@ -83,6 +83,13 @@ ament_target_dependencies(mission_pub
    route_service_msgs
    rclcpp)
 
+add_executable(drone
+  src/drone/route_injection_sub.cpp)
+ament_target_dependencies(drone
+   route_service_msgs
+   rclcpp)
+
+
 
 install(TARGETS
   

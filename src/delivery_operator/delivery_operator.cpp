@@ -15,6 +15,8 @@ DeliveryOperator::DeliveryOperator(const rclcpp::NodeOptions & node_options)
     subscription_ = this->create_subscription<route_service_msgs::msg::RouteCommand>("route_command",
                   10,std::bind(&DeliveryOperator::cmd_callback,this,std::placeholders::_1));
     route_service_client_=this->create_client<route_service_msgs::srv::Route>("route_operator");
+    wp_injection_pub_ = this ->create_publisher<route_service_msgs::msg::WaypointInjection>("wp_injection_pub",10);
+
     while(!route_service_client_->wait_for_service(1s)){
         if(!rclcpp::ok()){
             RCLCPP_ERROR(this->get_logger(),"Interrupted while waiting for the service");
@@ -22,6 +24,7 @@ DeliveryOperator::DeliveryOperator(const rclcpp::NodeOptions & node_options)
         }
         RCLCPP_INFO(this->get_logger(),"Service not available... waiting...");
     }
+
 }
 
 DeliveryOperator::~DeliveryOperator()
@@ -35,65 +38,43 @@ void DeliveryOperator::cmd_callback(route_service_msgs::msg::RouteCommand::Share
   auto request = std::make_shared<route_service_msgs::srv::Route::Request>();
     request->start=msg->startpoint;
     request->end=msg->endpoint;
+    wp_to_inject_.droneid=msg->droneid;
+    
 
+  auto response_received_callback =[this](rclcpp::Client<route_service_msgs::srv::Route>::SharedFuture future) {
+      auto response=future.get();
+      RCLCPP_INFO(this->get_logger(),"Receiced time: ",response->stamp);
+      result_WP_array_=response->route;
+      
+      for(auto & cur:result_WP_array_.waypoints)
+      {
+        std::cout<<cur.command<<"    lla:  "<<cur.lattitude<<"   "<<cur.longitude<<"   "<<cur.altitude<<"   "<<"param 1 2 3 4: "<<
+                    cur.param1<<"   "<<cur.param2<<"   "<<cur.param3<<"   "<<cur.param4<<std::endl;
+      }
+      
+      wp_to_inject_.waypoints=result_WP_array_.waypoints;
+      
 
-    auto response_received_callback =[this](rclcpp::Client<route_service_msgs::srv::Route>::SharedFuture future) {
-        auto response=future.get();
-        RCLCPP_INFO(this->get_logger(),"Receiced time: ",response->stamp);
-        result_WP_array=response->route;
-        for(auto & cur:result_WP_array.waypoints)
-        {
-          std::cout<<cur.command<<"    lla:  "<<cur.lattitude<<"   "<<cur.longitude<<"   "<<cur.altitude<<"   "<<"param 1 2 3 4: "<<
-                      cur.param1<<"   "<<cur.param2<<"   "<<cur.param3<<"   "<<cur.param4<<std::endl;
-        }
-    };
+      RCLCPP_INFO(this->get_logger(), "Publishing: waypoints to:   %d'", wp_to_inject_.droneid);
+      wp_injection_pub_->publish(wp_to_inject_);
+
+  };
      
-    auto future_result=
-        route_service_client_->async_send_request(request, response_received_callback);  
+  auto future_result=
+      route_service_client_->async_send_request(request, response_received_callback);  
 
 }
 
-class MinimalPublisher : public rclcpp::Node
-{
-  public:
-    MinimalPublisher()
-    : Node("minimal_publisher"), count_(0)
-    {
-      publisher_ = this->create_publisher<route_service_msgs::msg::RouteCommand>("route_command", 10);
-      timer_ = this->create_wall_timer(
-      100ms, std::bind(&MinimalPublisher::timer_callback, this));
-    }
 
-  private:
-    void timer_callback()
-    {
-      auto message = route_service_msgs::msg::RouteCommand();
-      message.startpoint="Base";
-      std::vector<std::string> destination ={"A-1","A-2","A-3","A-4","B-1","B-2","B-3","B-4","C-1","C-2","C-3"};
-      message.endpoint=destination[index];
-      RCLCPP_INFO(this->get_logger(), "Publishing: '%s'  '%s' ", message.startpoint.c_str(),message.endpoint.c_str());
-      publisher_->publish(message);
-      index++;
-      if(index>=destination.size())
-      {
-        index=0;
-      }
-      
-    }
-    int index=0;
-    rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<route_service_msgs::msg::RouteCommand>::SharedPtr publisher_;
-    size_t count_;
-};
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
+
   rclcpp::executors::SingleThreadedExecutor exec;
   auto node1 = std::make_shared<DeliveryOperator>();
-  //auto node2 = std::make_shared<MinimalPublisher>();
   exec.add_node(node1);
-  //exec.add_node(node2);
+  
   exec.spin();
   rclcpp::shutdown();
   return 0;
