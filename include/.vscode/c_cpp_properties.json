@@ -6,9 +6,15 @@
         "limitSymbolsToIncludedHeaders": true
       },
       "includePath": [
-        "include/**",
-        "/usr/include/**"
-      ],
+        "/home/airon/px4_ros_com_ros2/src/**",
+        "/home/yeojun/px4_ros_com_ros2/src/**",
+        "/usr/local/include/**",
+        "${workspaceFolder}/include/**",
+        "/opt/ros/dashing/include/**",
+        "/opt/ros/foxy/include/**",
+        "~/px4_ros_com_ros2/install/**",
+        "~/px4_ros_com_ros2/build/**",
+    ],
       "name": "ROS"
     }
   ],
