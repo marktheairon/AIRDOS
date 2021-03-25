@@ -22,8 +22,10 @@
 #include "route_service_msgs/srv/route.hpp"
 
 
-boost::filesystem::path dbfolder="/home/airon/Desktop/RouteDatabase";
-std::string dbfolder_string="/home/airon/Desktop/RouteDatabase/";
+//boost::filesystem::path dbfolder="/home/airon/Desktop/RouteDatabase";
+//std::string dbfolder_string="/home/airon/Desktop/RouteDatabase/";
+boost::filesystem::path dbfolder="/home/yeojun/Desktop/RouteDatabase";
+std::string dbfolder_string="/home/yeojun/Desktop/RouteDatabase/";
 
 double deg2rad(double deg) {
 return (deg * PI / 180);

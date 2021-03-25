@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdlib>
 
+
 #include "drone/route_injection_sub.hpp"
 
 #include "rclcpp/rclcpp.hpp"
@@ -17,7 +18,6 @@ RouteInjectionSub::RouteInjectionSub(const rclcpp::NodeOptions & node_options)
 {   
     subscription_ = this->create_subscription<route_service_msgs::msg::WaypointInjection>("wp_injection_pub",
                   10,std::bind(&RouteInjectionSub::msg_callback,this,std::placeholders::_1));
-
 
 }
 
@@ -38,6 +38,8 @@ void RouteInjectionSub::msg_callback(route_service_msgs::msg::WaypointInjection:
                       cur.param1<<"   "<<cur.param2<<"   "<<cur.param3<<"   "<<cur.param4<<std::endl;
         }
     }
+
+
 
 }
 

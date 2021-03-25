@@ -24,6 +24,7 @@ find_package(Boost 1.62.0 REQUIRED COMPONENTS system filesystem)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(route_service_msgs REQUIRED)
+find_package(MAVSDK REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -85,9 +86,11 @@ ament_target_dependencies(mission_pub
 
 add_executable(drone
   src/drone/route_injection_sub.cpp)
+  
 ament_target_dependencies(drone
    route_service_msgs
    rclcpp)
+   
 
 
 
@@ -102,8 +105,16 @@ install(TARGETS
 install(TARGETS
   delivery_operator
   routeservice
+  drone
+  mission_pub
   DESTINATION lib/${PROJECT_NAME})
 
+
+# Install launch files
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}
+)
 
 
 
