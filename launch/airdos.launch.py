@@ -16,9 +16,9 @@ def generate_launch_description():
             name='delivery_operator',
             output='screen' ),
         Node(
-            package='airdos',
-            executable='drone',
-            name='drone_node',
+            package='ros1_bridge',
+            executable='dynamic_bridge',
+            name='ros1_bridge',
             output='screen'),
         ])
         
