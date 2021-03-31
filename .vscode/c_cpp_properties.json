@@ -13,7 +13,10 @@
                 "~/px4_ros_com_ros2/install/**",
                 "~/px4_ros_com_ros2/build/**",
                 "/opt/ros/dashing/include/**",
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/include/**",
+                "/opt/ros/noetic/include/**",
+                "~/catkin_ws/devel/**",
+                "/usr"
             ],
             "name": "ROS"
         }

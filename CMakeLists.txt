@@ -1,124 +1,126 @@
 cmake_minimum_required(VERSION 3.5)
 project(airdos)
 
-# Default to C99
-if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
-endif()
 
-# Default to C++14
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
-endif()
-
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
-
+## Find catkin macros and libraries
+## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
+## is used, also find other catkin packages
 # find dependencies
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rclcpp_components REQUIRED)
-find_package(rcutils REQUIRED)
-find_package(Boost 1.62.0 REQUIRED COMPONENTS system filesystem)
-find_package(builtin_interfaces REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
+
+find_package(catkin REQUIRED COMPONENTS 
+      roscpp
+      mavros
+      mavros_msgs
+      std_msgs
+      std_srvs
+      message_generation
+      )
+
+find_package(px4_msgs REQUIRED)
+
 find_package(route_service_msgs REQUIRED)
 
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+## System dependencies are found with CMake's conventions
+find_package(Boost REQUIRED COMPONENTS system)
 
 
-
-
-
-include_directories(include)
-
-
-set(node_plugins "")
-
-
-add_executable(routeservice 
-	src/route_service/server/routeservice.cpp 
-	src/route_service/route.cpp 
-	src/route_service/a_star_node.cpp)
-ament_target_dependencies(routeservice
-  route_service_msgs
-  rclcpp
-)
-
-target_link_libraries(routeservice
-   ${Boost_FILESYSTEM_LIBRARY}
-   ${Boost_SYSTEM_LIBRARY}
-   ${Boost_LIBRARIES}
+catkin_package(
+    INCLUDE_DIRS include
+    LIBRARIES px4_ros_com
+    CATKIN_DEPENDS px4_msgs route_service_msgs
+    # DEPENDS ...
 )
 
 
-add_library(routeclient SHARED
-  src/route_service/client/routeclient.cpp)
-target_compile_definitions(routeclient
-  PRIVATE "COMPOSITION_BUILDING_DLL")
-ament_target_dependencies(routeclient
-  route_service_msgs
-  class_loader
-  rclcpp
+## Uncomment this if the package has a setup.py. This macro ensures
+## modules and global scripts declared therein get installed
+## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
+
+
+
+###################################
+## catkin specific configuration ##
+###################################
+
+catkin_package(
+    INCLUDE_DIRS include
+    LIBRARIES px4_ros_com
+    CATKIN_DEPENDS px4_msgs route_service_msgs mavros_msgs
+    # DEPENDS ...
 )
-rclcpp_components_register_nodes(routeclient "route_service_client_composition::RouteClient")
-set(node_plugins "${node_plugins}route_service_client_composition::RouteClient;$<TARGET_FILE:routeclient>\n")
 
+###########
+## Build ##
+###########
 
+## Add include dirs
+include_directories(
+    include
+    ${catkin_INCLUDE_DIRS}
+    ${px4_msgs_INCLUDE_DIRS}
+    ${route_service_msgs_INCLUDE_DIRS}
+#    ${mavros_INCLUDE_DIRS}
+#    ${mavros_msgs_INCLUDE_DIRS}
+)
 
+## Add library
+add_library(${PROJECT_NAME}
+    src/drone/waypoint_injector.cpp
+#   src/advertisers/debug_vect_advertiser.cpp
+)
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(delivery_operator
-  src/delivery_operator/delivery_operator.cpp)
-ament_target_dependencies(delivery_operator
-   route_service_msgs
-   rclcpp)
+## Build listener
+add_executable(
+    waypoint_injector
+    src/drone/waypoint_injector.cpp
+)
+add_dependencies(waypoint_injector ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_injector ${catkin_LIBRARIES})
 
+## Build advertiser
+# add_executable(
+#     debug_vect_advertiser
+#     src/advertisers/debug_vect_advertiser.cpp
+# )
+# add_dependencies(debug_vect_advertiser ${catkin_EXPORTED_TARGETS})
+# target_link_libraries(debug_vect_advertiser ${catkin_LIBRARIES})
 
-add_executable(mission_pub
-  src/mission_control/mission_pub.cpp)
-ament_target_dependencies(mission_pub
-   route_service_msgs
-   rclcpp)
+#############
+## Install ##
+#############
 
-add_executable(drone
-  src/drone/route_injection_sub.cpp)
-ament_target_dependencies(drone
-   route_service_msgs
-   rclcpp)
+## Mark executables and/or libraries for installation
+install(TARGETS ${PROJECT_NAME} waypoint_injector # debug_vect_advertiser
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
+## Mark cpp header files for installation
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+)
 
+## Mark other files for installation (e.g. launch and bag files, etc.)
+install(DIRECTORY launch
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
-install(TARGETS
-  
-  routeclient
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+## Install package.xml
+install(
+  FILES ${PROJECT_SOURCE_DIR}/package.xml
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${PROJECT_NAME}
+)
 
+#############
+## Testing ##
+#############
 
-install(TARGETS
-  delivery_operator
-  routeservice
-  DESTINATION lib/${PROJECT_NAME})
+if(CATKIN_ENABLE_TESTING)
 
+#TODO
 
-
-
-
-
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
 endif()
-ament_export_dependencies(class_loader)
-ament_package()
+

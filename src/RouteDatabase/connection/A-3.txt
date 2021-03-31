@@ -1,3 +1,0 @@
-#	Connected to	cost	route
-	A-2		0.151	a2-a3`
-	A-4		0.304	a3-a4
