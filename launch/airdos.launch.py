@@ -16,6 +16,11 @@ def generate_launch_description():
             name='delivery_operator',
             output='screen' ),
         Node(
+            package='airdos',
+            executable='waypoint_injector_client',
+            name='waypoint_injector_client',
+            output='screen' ),
+        Node(
             package='ros1_bridge',
             executable='dynamic_bridge',
             name='ros1_bridge',

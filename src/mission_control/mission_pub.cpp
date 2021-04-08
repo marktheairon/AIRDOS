@@ -34,7 +34,7 @@ void MissionPublish::publish_keyboard_input()
     message.endpoint=end;
     message.droneid=droneid;
 
-    RCLCPP_INFO(this->get_logger(), "Publishing: '%s    %s    %d'", message.startpoint,message.endpoint,message.droneid);
+    RCLCPP_INFO(this->get_logger(), "Publishing: %s    %s    %d ", message.startpoint,message.endpoint,message.droneid);
     route_command_publisher_->publish(message);
 
 }

@@ -25,6 +25,7 @@ find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(route_service_msgs REQUIRED)
 find_package(MAVSDK REQUIRED)
+find_package(px4_msgs REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -84,14 +85,20 @@ ament_target_dependencies(mission_pub
    route_service_msgs
    rclcpp)
 
-add_executable(drone
-  src/drone/route_injection_sub.cpp)
+add_executable(waypoint_injector_client
+  src/drone/waypoint_injector_client.cpp)
   
-ament_target_dependencies(drone
+ament_target_dependencies(waypoint_injector_client
    route_service_msgs
    rclcpp)
    
-
+add_executable(state_pub
+  src/drone/state_pub.cpp)
+  
+ament_target_dependencies(state_pub
+   route_service_msgs
+   px4_msgs
+   rclcpp)
 
 
 install(TARGETS
@@ -105,8 +112,9 @@ install(TARGETS
 install(TARGETS
   delivery_operator
   routeservice
-  drone
+  waypoint_injector_client
   mission_pub
+  state_pub
   DESTINATION lib/${PROJECT_NAME})
 
 

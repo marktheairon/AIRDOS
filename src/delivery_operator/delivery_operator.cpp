@@ -19,11 +19,12 @@ DeliveryOperator::DeliveryOperator(const rclcpp::NodeOptions & node_options)
 
     while(!route_service_client_->wait_for_service(1s)){
         if(!rclcpp::ok()){
-            RCLCPP_ERROR(this->get_logger(),"Interrupted while waiting for the service");
+            RCLCPP_ERROR(this->get_logger(),"Interrupted while waiting for the route service");
             return;
         }
         RCLCPP_INFO(this->get_logger(),"Service not available... waiting...");
     }
+
 
 }
 
@@ -35,33 +36,33 @@ DeliveryOperator::~DeliveryOperator()
 void DeliveryOperator::cmd_callback(route_service_msgs::msg::RouteCommand::SharedPtr msg)
 {
 
-  auto request = std::make_shared<route_service_msgs::srv::Route::Request>();
-    request->start=msg->startpoint;
-    request->end=msg->endpoint;
-    wp_to_inject_.droneid=msg->droneid;
-    
-
-  auto response_received_callback =[this](rclcpp::Client<route_service_msgs::srv::Route>::SharedFuture future) {
-      auto response=future.get();
-      RCLCPP_INFO(this->get_logger(),"Receiced time: ",response->stamp);
-      result_WP_array_=response->route;
-      
-      for(auto & cur:result_WP_array_.waypoints)
-      {
-        std::cout<<cur.command<<"    lla:  "<<cur.lattitude<<"   "<<cur.longitude<<"   "<<cur.altitude<<"   "<<"param 1 2 3 4: "<<
-                    cur.param1<<"   "<<cur.param2<<"   "<<cur.param3<<"   "<<cur.param4<<std::endl;
-      }
-      
-      wp_to_inject_.waypoints=result_WP_array_.waypoints;
+      auto request = std::make_shared<route_service_msgs::srv::Route::Request>();
+      request->start=msg->startpoint;
+      request->end=msg->endpoint;
+      wp_to_inject_.droneid=msg->droneid;
       
 
-      RCLCPP_INFO(this->get_logger(), "Publishing: waypoints to:   %d'", wp_to_inject_.droneid);
-      wp_injection_pub_->publish(wp_to_inject_);
+    auto response_received_callback =[this](rclcpp::Client<route_service_msgs::srv::Route>::SharedFuture future) {
+        auto response=future.get();
+        RCLCPP_INFO(this->get_logger(),"Receiced time: ",response->stamp);
+        result_WP_array_=response->route;
+        
+        for(auto & cur:result_WP_array_.waypoints)
+        {
+          std::cout<<cur.command<<"    lla:  "<<cur.lattitude<<"   "<<cur.longitude<<"   "<<cur.altitude<<"   "<<"param 1 2 3 4: "<<
+                      cur.param1<<"   "<<cur.param2<<"   "<<cur.param3<<"   "<<cur.param4<<std::endl;
+        }
+        
+        wp_to_inject_.waypoints=result_WP_array_.waypoints;
+        
 
-  };
-     
-  auto future_result=
-      route_service_client_->async_send_request(request, response_received_callback);  
+        RCLCPP_INFO(this->get_logger(), "Publishing: waypoints to:   %d'", wp_to_inject_.droneid);
+        wp_injection_pub_->publish(wp_to_inject_);
+
+    };
+      
+    auto future_result=
+        route_service_client_->async_send_request(request, response_received_callback); 
 
 }
 

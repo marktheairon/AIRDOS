@@ -15,6 +15,8 @@
 #include "route_service_msgs/msg/waypoint_array.hpp"
 #include "route_service_msgs/msg/waypoint_injection.hpp"
 #include "route_service_msgs/srv/route.hpp"
+#include "route_service_msgs/srv/waypoint_injector.hpp"
+
 #include "route_service/routeclient.hpp"
 #include "std_msgs/msg/string.hpp"
 
