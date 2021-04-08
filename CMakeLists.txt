@@ -7,6 +7,7 @@ project(airdos)
 ## is used, also find other catkin packages
 # find dependencies
 
+
 find_package(catkin REQUIRED COMPONENTS 
       roscpp
       mavros
@@ -65,18 +66,23 @@ include_directories(
 
 ## Add library
 add_library(${PROJECT_NAME}
-    src/drone/waypoint_injector.cpp
+#    src/drone/waypoint_injector.cpp
+    src/drone/waypoint_injector_server.cpp
 #   src/advertisers/debug_vect_advertiser.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
 ## Build listener
+#add_executable(
+#    waypoint_injector
+#    src/drone/waypoint_injector.cpp
+#)
 add_executable(
-    waypoint_injector
-    src/drone/waypoint_injector.cpp
+    waypoint_injector_server
+    src/drone/waypoint_injector_server.cpp
 )
-add_dependencies(waypoint_injector ${catkin_EXPORTED_TARGETS})
-target_link_libraries(waypoint_injector ${catkin_LIBRARIES})
+add_dependencies(waypoint_injector_server ${catkin_EXPORTED_TARGETS})
+target_link_libraries(waypoint_injector_server ${catkin_LIBRARIES})
 
 ## Build advertiser
 # add_executable(
@@ -91,7 +97,7 @@ target_link_libraries(waypoint_injector ${catkin_LIBRARIES})
 #############
 
 ## Mark executables and/or libraries for installation
-install(TARGETS ${PROJECT_NAME} waypoint_injector # debug_vect_advertiser
+install(TARGETS ${PROJECT_NAME} waypoint_injector_server # debug_vect_advertiser
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
