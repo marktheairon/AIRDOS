@@ -71,7 +71,6 @@ set(node_plugins "${node_plugins}route_service_client_composition::RouteClient;$
 
 
 
-
 add_executable(delivery_operator
   src/delivery_operator/delivery_operator.cpp)
 ament_target_dependencies(delivery_operator
@@ -110,6 +109,7 @@ install(TARGETS
 
 
 install(TARGETS
+  
   delivery_operator
   routeservice
   waypoint_injector_client

@@ -28,7 +28,8 @@ class VehicleStatePublisher : public rclcpp::Node
 
             private:
                 rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr vehicle_status_;
-                
+                rclcpp::Subscription<px4_msgs::msg::VehicleLandDetected>::SharedPtr vehicle_land_detected_;
+                rclcpp::Subscription<px4_msgs::msg::VehicleGpsPosition>::SharedPtr vehicle_gps_position_;
 
 };
 
