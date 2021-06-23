@@ -21,7 +21,7 @@ RouteClient::RouteClient(const rclcpp::NodeOptions & node_options)
 : Node("route_client",node_options)
 {   
     using namespace std::chrono_literals;
-    route_service_client_=this->create_client<route_service_msgs::srv::Route>("route_operator");
+    route_service_client_=this->create_client<airdos_msgs::srv::Route>("route_operator");
     while(!route_service_client_->wait_for_service(1s)){
         if(!rclcpp::ok()){
             RCLCPP_ERROR(this->get_logger(),"Interrupted while waiting for the service");
@@ -30,7 +30,7 @@ RouteClient::RouteClient(const rclcpp::NodeOptions & node_options)
         RCLCPP_INFO(this->get_logger(),"Service not available... waiting...");
     }
 /*    
-      auto response_received_callback =[this](rclcpp::Client<route_service_msgs::srv::Route>::SharedFuture future) {
+      auto response_received_callback =[this](rclcpp::Client<airdos_msgs::srv::Route>::SharedFuture future) {
           auto response=future.get();
           RCLCPP_INFO(this->get_logger(),"Receiced time: ",response->stamp);
           result_WP_array=response->route;
@@ -43,7 +43,7 @@ RouteClient::RouteClient(const rclcpp::NodeOptions & node_options)
       };
 
       std::string start,end;
-      auto request = std::make_shared<route_service_msgs::srv::Route::Request>();
+      auto request = std::make_shared<airdos_msgs::srv::Route::Request>();
 
       std::cin>>start>>end;
       request->start = start;
@@ -60,14 +60,14 @@ RouteClient::~RouteClient()
 }
 
 
-route_service_msgs::msg::WaypointArray RouteClient::send_request(std::string _start, std::string _end){
+airdos_msgs::msg::WaypointArray RouteClient::send_request(std::string _start, std::string _end){
 
-    auto request = std::make_shared<route_service_msgs::srv::Route::Request>();
+    auto request = std::make_shared<airdos_msgs::srv::Route::Request>();
     request->start=_start;
     request->end=_end;
 
 
-    auto response_received_callback =[this](rclcpp::Client<route_service_msgs::srv::Route>::SharedFuture future) {
+    auto response_received_callback =[this](rclcpp::Client<airdos_msgs::srv::Route>::SharedFuture future) {
         auto response=future.get();
         RCLCPP_INFO(this->get_logger(),"Receiced time: ",response->stamp);
         result_WP_array=response->route;

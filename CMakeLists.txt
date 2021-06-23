@@ -23,8 +23,7 @@ find_package(rcutils REQUIRED)
 find_package(Boost 1.62.0 REQUIRED COMPONENTS system filesystem)
 find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
-find_package(route_service_msgs REQUIRED)
-find_package(MAVSDK REQUIRED)
+find_package(airdos_msgs REQUIRED)
 find_package(px4_msgs REQUIRED)
 
 # uncomment the following section in order to fill in
@@ -46,7 +45,7 @@ add_executable(routeservice
 	src/route_service/route.cpp 
 	src/route_service/a_star_node.cpp)
 ament_target_dependencies(routeservice
-  route_service_msgs
+  airdos_msgs
   rclcpp
 )
 
@@ -62,7 +61,7 @@ add_library(routeclient SHARED
 target_compile_definitions(routeclient
   PRIVATE "COMPOSITION_BUILDING_DLL")
 ament_target_dependencies(routeclient
-  route_service_msgs
+  airdos_msgs
   class_loader
   rclcpp
 )
@@ -74,28 +73,28 @@ set(node_plugins "${node_plugins}route_service_client_composition::RouteClient;$
 add_executable(delivery_operator
   src/delivery_operator/delivery_operator.cpp)
 ament_target_dependencies(delivery_operator
-   route_service_msgs
+   airdos_msgs
    rclcpp)
 
 
 add_executable(mission_pub
   src/mission_control/mission_pub.cpp)
 ament_target_dependencies(mission_pub
-   route_service_msgs
+   airdos_msgs
    rclcpp)
 
 add_executable(waypoint_injector_client
   src/drone/waypoint_injector_client.cpp)
   
 ament_target_dependencies(waypoint_injector_client
-   route_service_msgs
+   airdos_msgs
    rclcpp)
    
 add_executable(state_pub
   src/drone/state_pub.cpp)
   
 ament_target_dependencies(state_pub
-   route_service_msgs
+   airdos_msgs
    px4_msgs
    rclcpp)
 

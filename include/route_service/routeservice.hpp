@@ -10,9 +10,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "route_service_msgs/msg/waypoint.hpp"
-#include "route_service_msgs/msg/waypoint_array.hpp"
-#include "route_service_msgs/srv/route.hpp"
+#include "airdos_msgs/msg/waypoint.hpp"
+#include "airdos_msgs/msg/waypoint_array.hpp"
+#include "airdos_msgs/srv/route.hpp"
 
 #include "a_star_node.h"
 #include "route.h"
@@ -20,10 +20,10 @@
 class RouteService : public rclcpp::Node
 {
 public:
-  using RouteRequest = route_service_msgs::srv::Route::Request;
-  using RouteResponse = route_service_msgs::srv::Route::Response;
-  using RouteOperator = route_service_msgs::srv::Route;
-  using WaypointArray= route_service_msgs::msg::WaypointArray;
+  using RouteRequest = airdos_msgs::srv::Route::Request;
+  using RouteResponse = airdos_msgs::srv::Route::Response;
+  using RouteOperator = airdos_msgs::srv::Route;
+  using WaypointArray= airdos_msgs::msg::WaypointArray;
 
   explicit RouteService(const rclcpp::NodeOptions & node_options = rclcpp::NodeOptions());
   virtual ~RouteService();

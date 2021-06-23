@@ -56,8 +56,8 @@ void Route::printOut(){
     }
 }
 
-void Route::transferWP(route_service_msgs::msg::WaypointArray &target){
-    route_service_msgs::msg::Waypoint wp_tmp;
+void Route::transferWP(airdos_msgs::msg::WaypointArray &target){
+    airdos_msgs::msg::Waypoint wp_tmp;
     for(int i=0; i<waypoints.size();i++){
         
         if(waypoints[i].command==16)

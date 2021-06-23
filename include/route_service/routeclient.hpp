@@ -12,7 +12,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "visibility_control.h"
 
-#include "route_service_msgs/srv/route.hpp"
+#include "airdos_msgs/srv/route.hpp"
 
 namespace route_service_client_composition
 {
@@ -26,11 +26,11 @@ class RouteClient : public rclcpp::Node
         explicit RouteClient(const rclcpp::NodeOptions & node_options =rclcpp::NodeOptions());
         virtual ~RouteClient();
 
-        route_service_msgs::msg::WaypointArray send_request(std::string, std::string);
+        airdos_msgs::msg::WaypointArray send_request(std::string, std::string);
 
     private:
-        rclcpp::Client<route_service_msgs::srv::Route>::SharedPtr route_service_client_;
-        route_service_msgs::msg::WaypointArray result_WP_array;
+        rclcpp::Client<airdos_msgs::srv::Route>::SharedPtr route_service_client_;
+        airdos_msgs::msg::WaypointArray result_WP_array;
 };
 
 /*

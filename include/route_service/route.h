@@ -33,7 +33,7 @@ class Route{
         A_star::Node* endnode();
         bool* checkUproute();
         void printOut();
-        void transferWP(route_service_msgs::msg::WaypointArray &);
+        void transferWP(airdos_msgs::msg::WaypointArray &);
 
 
 

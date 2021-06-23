@@ -17,9 +17,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "route_service_msgs/msg/waypoint.hpp"
-#include "route_service_msgs/msg/waypoint_array.hpp"
-#include "route_service_msgs/srv/route.hpp"
+#include "airdos_msgs/msg/waypoint.hpp"
+#include "airdos_msgs/msg/waypoint_array.hpp"
+#include "airdos_msgs/srv/route.hpp"
 
 
 //boost::filesystem::path dbfolder="/home/airon/Desktop/RouteDatabase";
@@ -873,9 +873,9 @@ Route search_route(std::vector<Route> &routelist,A_star::Node &start,A_star::Nod
 }
 
 
-route_service_msgs::msg::WaypointArray waypoint_assembly(std::vector<A_star::Node> &resultpath, std::vector<Route> &routelist){
+airdos_msgs::msg::WaypointArray waypoint_assembly(std::vector<A_star::Node> &resultpath, std::vector<Route> &routelist){
     
-    route_service_msgs::msg::WaypointArray route_final;
+    airdos_msgs::msg::WaypointArray route_final;
     
     for(int i=0;i<resultpath.size()-1;i++){
         A_star::Node start_tmp, end_tmp;
@@ -910,7 +910,7 @@ route_service_msgs::msg::WaypointArray waypoint_assembly(std::vector<A_star::Nod
     }
     
 
-    route_service_msgs::msg::Waypoint wp_tmp;
+    airdos_msgs::msg::Waypoint wp_tmp;
     wp_tmp.param1=0;
     wp_tmp.param2=0;
     wp_tmp.param3=0;
@@ -1004,7 +1004,7 @@ RouteService::~RouteService()
 
 
 
-route_service_msgs::msg::WaypointArray RouteService::calculate_route(const std::string &_start, const std::string &_end)
+airdos_msgs::msg::WaypointArray RouteService::calculate_route(const std::string &_start, const std::string &_end)
 {
     parsedlist_.clear();
     resultpath_.clear();

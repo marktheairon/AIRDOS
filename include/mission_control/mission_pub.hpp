@@ -10,7 +10,7 @@
 
 
 #include "rclcpp/rclcpp.hpp"
-#include "route_service_msgs/msg/route_command.hpp"
+#include "airdos_msgs/msg/route_command.hpp"
 
 
 
@@ -26,7 +26,7 @@ class MissionPublish : public rclcpp::Node
         void publish_keyboard_input();
         void publish_app_api_input();
 
-        rclcpp::Publisher<route_service_msgs::msg::RouteCommand>::SharedPtr  route_command_publisher_;
+        rclcpp::Publisher<airdos_msgs::msg::RouteCommand>::SharedPtr  route_command_publisher_;
         /////add subscription for app api later
 };
 

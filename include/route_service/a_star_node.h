@@ -11,9 +11,9 @@
 #include <boost/filesystem.hpp>
 #include "rapidjson/document.h"
 
-#include "route_service_msgs/msg/waypoint.hpp"
-#include "route_service_msgs/msg/waypoint_array.hpp"
-#include "route_service_msgs/srv/route.hpp"
+#include "airdos_msgs/msg/waypoint.hpp"
+#include "airdos_msgs/msg/waypoint_array.hpp"
+#include "airdos_msgs/srv/route.hpp"
 
 #define PI 3.14159265
 #define ALT_DIFF 1

@@ -7,7 +7,7 @@
 MissionPublish::MissionPublish(const rclcpp::NodeOptions & node_options) 
 : Node("mission_pub",node_options)
 {
-    route_command_publisher_ = this->create_publisher<route_service_msgs::msg::RouteCommand>("route_command",10);
+    route_command_publisher_ = this->create_publisher<airdos_msgs::msg::RouteCommand>("route_command",10);
     while (rclcpp::ok())
     {
         this->publish_keyboard_input();
@@ -29,7 +29,7 @@ void MissionPublish::publish_keyboard_input()
     std::cout<<"Type  Start / End / TargetID"<<std::endl;
     std::cin>>start>>end>>droneid;
 
-    auto message= route_service_msgs::msg::RouteCommand();
+    auto message= airdos_msgs::msg::RouteCommand();
     message.startpoint=start;
     message.endpoint=end;
     message.droneid=droneid;

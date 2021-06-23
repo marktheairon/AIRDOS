@@ -12,10 +12,10 @@ using namespace std::chrono_literals;
 DeliveryOperator::DeliveryOperator(const rclcpp::NodeOptions & node_options)
 : Node("delivery_operator",node_options)
 {   
-    subscription_ = this->create_subscription<route_service_msgs::msg::RouteCommand>("route_command",
+    subscription_ = this->create_subscription<airdos_msgs::msg::RouteCommand>("route_command",
                   10,std::bind(&DeliveryOperator::cmd_callback,this,std::placeholders::_1));
-    route_service_client_=this->create_client<route_service_msgs::srv::Route>("route_operator");
-    wp_injection_pub_ = this ->create_publisher<route_service_msgs::msg::WaypointInjection>("wp_injection_pub",10);
+    route_service_client_=this->create_client<airdos_msgs::srv::Route>("route_operator");
+    wp_injection_pub_ = this ->create_publisher<airdos_msgs::msg::WaypointInjection>("wp_injection_pub",10);
 
     while(!route_service_client_->wait_for_service(1s)){
         if(!rclcpp::ok()){
@@ -33,16 +33,16 @@ DeliveryOperator::~DeliveryOperator()
 
 }
 
-void DeliveryOperator::cmd_callback(route_service_msgs::msg::RouteCommand::SharedPtr msg)
+void DeliveryOperator::cmd_callback(airdos_msgs::msg::RouteCommand::SharedPtr msg)
 {
 
-      auto request = std::make_shared<route_service_msgs::srv::Route::Request>();
+      auto request = std::make_shared<airdos_msgs::srv::Route::Request>();
       request->start=msg->startpoint;
       request->end=msg->endpoint;
       wp_to_inject_.droneid=msg->droneid;
       
 
-    auto response_received_callback =[this](rclcpp::Client<route_service_msgs::srv::Route>::SharedFuture future) {
+    auto response_received_callback =[this](rclcpp::Client<airdos_msgs::srv::Route>::SharedFuture future) {
         auto response=future.get();
         RCLCPP_INFO(this->get_logger(),"Receiced time: ",response->stamp);
         result_WP_array_=response->route;
@@ -108,7 +108,7 @@ int main(int argc, char * argv[])
   exec.add_node(routeclient);
   std::string start,end;
   std::cin>>start>>end;
-  route_service_msgs::msg::WaypointArray route;
+  airdos_msgs::msg::WaypointArray route;
   route=routeclient->send_request(start,end);
   for(auto & cur:route.waypoints)
   {

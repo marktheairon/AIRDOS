@@ -20,9 +20,9 @@
 RouteInjectionSub::RouteInjectionSub(const rclcpp::NodeOptions & node_options)
 : Node("route_injection_sub",node_options)
 {   
-    subscription_ = this->create_subscription<route_service_msgs::msg::WaypointInjection>("wp_injection_pub",
+    subscription_ = this->create_subscription<airdos_msgs::msg::WaypointInjection>("wp_injection_pub",
                   10,std::bind(&RouteInjectionSub::msg_callback,this,std::placeholders::_1));
-    waypoint_injector_client_ = this->create_client<route_service_msgs::srv::WaypointInjector>("waypoint_injector_server");
+    waypoint_injector_client_ = this->create_client<airdos_msgs::srv::WaypointInjector>("waypoint_injector_server");
 
 }
 
@@ -31,13 +31,13 @@ RouteInjectionSub::~RouteInjectionSub()
 
 }
 
-void RouteInjectionSub::msg_callback(route_service_msgs::msg::WaypointInjection::SharedPtr msg)
+void RouteInjectionSub::msg_callback(airdos_msgs::msg::WaypointInjection::SharedPtr msg)
 {
-    auto request = std::make_shared<route_service_msgs::srv::WaypointInjector::Request>();
+    auto request = std::make_shared<airdos_msgs::srv::WaypointInjector::Request>();
       request->injetionitem.waypoints=msg->waypoints;
       request->injetionitem.droneid=msg->droneid;
       
-    auto response_received_callback =[this](rclcpp::Client<route_service_msgs::srv::WaypointInjector>::SharedFuture future) {
+    auto response_received_callback =[this](rclcpp::Client<airdos_msgs::srv::WaypointInjector>::SharedFuture future) {
         auto response=future.get();
         
         std::cout<<"Waypoint injection Result : "<< response->sanity_check <<std::endl;
