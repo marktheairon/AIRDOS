@@ -85,8 +85,9 @@ ament_target_dependencies(mission_pub
 
 add_executable(waypoint_injector_client
   src/drone/waypoint_injector_client.cpp)
-  
+
 ament_target_dependencies(waypoint_injector_client
+   px4_msgs
    airdos_msgs
    rclcpp)
    
@@ -94,8 +95,8 @@ add_executable(state_pub
   src/drone/state_pub.cpp)
   
 ament_target_dependencies(state_pub
-   airdos_msgs
    px4_msgs
+   airdos_msgs
    rclcpp)
 
 

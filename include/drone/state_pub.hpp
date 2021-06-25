@@ -8,11 +8,12 @@
 #include <utility>
 #include <random>
 
-#include "px4_msgs/msg/vehicle_gps_position.hpp"
+
 #include "px4_msgs/msg/vehicle_status.hpp"
 #include "px4_msgs/msg/vehicle_land_detected.hpp"
 #include "px4_msgs/msg/takeoff_status.hpp"
 #include "px4_msgs/msg/vehicle_global_position.hpp"
+#include "px4_msgs/msg/vehicle_gps_position.hpp"
 
 
 #include "rclcpp/rclcpp.hpp"
