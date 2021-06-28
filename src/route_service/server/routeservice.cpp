@@ -215,6 +215,7 @@ void parse_connection_file(std::vector<A_star::Node> &nodelist)                 
 
             while(cnectfile)                                                                    //while file is open , until eof()
             {
+                
                 cnectfile.getline(buf,100);                                                     //write one line to buffer
                 bufconvert=static_cast<std::string>(buf);                                       //change char -> string for later use
                
@@ -225,6 +226,8 @@ void parse_connection_file(std::vector<A_star::Node> &nodelist)                 
                 std::vector<std::string> result=tokenize_operator(buf);                         //tokenize line
 
                 if(result[0]=="#"){std::cout<<"pass index row"<<std::endl; continue;}           //pass first index line
+                
+            
 
                 for (int i = 0; i < result.size(); i++)                                         // for each element in one line
                 {                                 
@@ -367,7 +370,7 @@ void parse_route_file(std::vector<A_star::Node> &nodelist,std::vector<Route> &ro
                         //std::cout<<buf<<std::endl;
                         Document routebuf;
                         routebuf.Parse(buf);
-                        //std::cout<<buf<<std::endl;
+                        std::cout<<buf<<std::endl;
                         const Value& mission = routebuf["mission"];
                         //if(mission.IsObject()){std::cout<<"end of route file"<<std::endl;}
                     
