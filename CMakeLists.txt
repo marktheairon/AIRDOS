@@ -19,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 find_package(px4_msgs REQUIRED)
 
-find_package(route_service_msgs REQUIRED)
+find_package(airdos_msgs REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
@@ -28,7 +28,7 @@ find_package(Boost REQUIRED COMPONENTS system)
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES px4_ros_com
-    CATKIN_DEPENDS px4_msgs route_service_msgs
+    CATKIN_DEPENDS px4_msgs airdos_msgs
     # DEPENDS ...
 )
 
@@ -46,7 +46,7 @@ catkin_package(
 catkin_package(
     INCLUDE_DIRS include
     LIBRARIES px4_ros_com
-    CATKIN_DEPENDS px4_msgs route_service_msgs mavros_msgs
+    CATKIN_DEPENDS px4_msgs airdos_msgs mavros_msgs
     # DEPENDS ...
 )
 
@@ -59,7 +59,7 @@ include_directories(
     include
     ${catkin_INCLUDE_DIRS}
     ${px4_msgs_INCLUDE_DIRS}
-    ${route_service_msgs_INCLUDE_DIRS}
+    ${airdos_msgs_INCLUDE_DIRS}
 #    ${mavros_INCLUDE_DIRS}
 #    ${mavros_msgs_INCLUDE_DIRS}
 )

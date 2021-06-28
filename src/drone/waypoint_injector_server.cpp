@@ -3,7 +3,7 @@
 #include <string>
 
 #include "ros/ros.h"
-#include "route_service_msgs/WaypointInjector.h"
+#include "airdos_msgs/WaypointInjector.h"
 
 #include <mavros_msgs/WaypointPush.h>
 #include <mavros_msgs/HomePosition.h>
@@ -11,8 +11,8 @@
 #include <mavros_msgs/CommandHome.h>
 #include <mavros_msgs/Waypoint.h>
 
-#include "route_service_msgs/WaypointInjection.h"
-#include "route_service_msgs/WaypointArray.h"
+#include "airdos_msgs/WaypointInjection.h"
+#include "airdos_msgs/WaypointArray.h"
 
 
 #define DRONEID 1
@@ -39,7 +39,7 @@ class WaypointInjector
 
     }
 
-    bool service_callback(route_service_msgs::WaypointInjector::Request &req, route_service_msgs::WaypointInjector::Response &res)
+    bool service_callback(airdos_msgs::WaypointInjector::Request &req, airdos_msgs::WaypointInjector::Response &res)
     {   
         if(req.injetionitem.droneid==DRONEID)
         {
@@ -132,7 +132,7 @@ class WaypointInjector
         mavros_msgs::WaypointPush wp_push_srv;
         mavros_msgs::CommandHome set_home_srv;
         mavros_msgs::WaypointClear wp_clear_srv;
-        route_service_msgs::WaypointInjection waypoint_data;
+        airdos_msgs::WaypointInjection waypoint_data;
         bool update_check;
 
 
