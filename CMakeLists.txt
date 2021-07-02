@@ -40,48 +40,49 @@ include_directories(include)
 set(node_plugins "")
 
 
-add_executable(routeservice 
-	src/route_service/server/routeservice.cpp 
-	src/route_service/route.cpp 
-	src/route_service/a_star_node.cpp)
-ament_target_dependencies(routeservice
-  airdos_msgs
-  rclcpp
-)
+#add_executable(routeservice 
+#
+#	src/route_service/server/routeservice.cpp 
+#	src/route_service/route.cpp 
+#	src/route_service/a_star_node.cpp)
+#ament_target_dependencies(routeservice
+#  airdos_msgs
+#  rclcpp
+#)
 
-target_link_libraries(routeservice
-   ${Boost_FILESYSTEM_LIBRARY}
-   ${Boost_SYSTEM_LIBRARY}
-   ${Boost_LIBRARIES}
-)
-
-
-add_library(routeclient SHARED
-  src/route_service/client/routeclient.cpp)
-target_compile_definitions(routeclient
-  PRIVATE "COMPOSITION_BUILDING_DLL")
-ament_target_dependencies(routeclient
-  airdos_msgs
-  class_loader
-  rclcpp
-)
-rclcpp_components_register_nodes(routeclient "route_service_client_composition::RouteClient")
-set(node_plugins "${node_plugins}route_service_client_composition::RouteClient;$<TARGET_FILE:routeclient>\n")
+#target_link_libraries(routeservice
+#   ${Boost_FILESYSTEM_LIBRARY}
+#   ${Boost_SYSTEM_LIBRARY}
+#   ${Boost_LIBRARIES}
+#)
 
 
+#add_library(routeclient SHARED
+#  src/route_service/client/routeclient.cpp)
+#target_compile_definitions(routeclient
+#  PRIVATE "COMPOSITION_BUILDING_DLL")
+#ament_target_dependencies(routeclient
+#  airdos_msgs
+#  class_loader
+#  rclcpp
+#)
+#rclcpp_components_register_nodes(routeclient "route_service_client_composition::RouteClient")
+#set(node_plugins "${node_plugins}#route_service_client_composition::RouteClient;#$<TARGET_FILE:routeclient>\n")
 
-add_executable(delivery_operator
-  src/delivery_operator/delivery_operator.cpp)
-ament_target_dependencies(delivery_operator
-   airdos_msgs
-   rclcpp)
 
 
-add_executable(mission_pub
-  src/mission_control/mission_pub.cpp)
-ament_target_dependencies(mission_pub
-   airdos_msgs
-   rclcpp)
+#add_executable(delivery_operator
+#  src/delivery_operator/delivery_operator.cpp)
+#ament_target_dependencies(delivery_operator
+#   airdos_msgs
+#   rclcpp)
+
+
+#add_executable(mission_pub
+#  src/mission_control/mission_pub.cpp)
+#ament_target_dependencies(mission_pub
+#   airdos_msgs
+#   rclcpp)
 
 add_executable(waypoint_injector_client
   src/drone/waypoint_injector_client.cpp)
@@ -100,20 +101,20 @@ ament_target_dependencies(state_pub
    rclcpp)
 
 
-install(TARGETS
+#install(TARGETS
   
-  routeclient
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+#  routeclient
+#  ARCHIVE DESTINATION lib
+#  LIBRARY DESTINATION lib
+#  RUNTIME DESTINATION bin)
 
 
 install(TARGETS
-  
-  delivery_operator
-  routeservice
+
+#  delivery_operator
+#  routeservice
   waypoint_injector_client
-  mission_pub
+#  mission_pub
   state_pub
   DESTINATION lib/${PROJECT_NAME})
 
