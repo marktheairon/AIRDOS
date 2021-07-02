@@ -27,6 +27,7 @@
 
 class RouteInjectionSub : public rclcpp::Node
 {
+    
     public:
         explicit RouteInjectionSub(const rclcpp::NodeOptions & node_options =rclcpp::NodeOptions());
         virtual ~RouteInjectionSub();

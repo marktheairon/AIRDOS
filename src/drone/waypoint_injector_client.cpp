@@ -50,6 +50,7 @@ void RouteInjectionSub::msg_callback(airdos_msgs::msg::WaypointInjection::Shared
       request->injetionitem.waypoints=msg->waypoints;
       request->injetionitem.droneid=msg->droneid;
       
+      
     auto response_received_callback =[this](rclcpp::Client<airdos_msgs::srv::WaypointInjector>::SharedFuture future) {
         auto response=future.get();
         
