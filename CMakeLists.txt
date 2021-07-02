@@ -25,6 +25,7 @@ find_package(builtin_interfaces REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(airdos_msgs REQUIRED)
 find_package(px4_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 # uncomment the following section in order to fill in
 # further dependencies manually.
@@ -100,6 +101,14 @@ ament_target_dependencies(state_pub
    rclcpp)
 
 
+add_executable(listener
+  src/listener.cpp)
+  
+ament_target_dependencies(listener
+   std_msgs
+   rclcpp)
+
+
 install(TARGETS
   
   routeclient
@@ -115,6 +124,7 @@ install(TARGETS
   waypoint_injector_client
   mission_pub
   state_pub
+  listener
   DESTINATION lib/${PROJECT_NAME})
 
 

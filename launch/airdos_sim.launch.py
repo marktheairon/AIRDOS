@@ -20,7 +20,11 @@ def generate_launch_description():
             executable='waypoint_injector_client',
             name='waypoint_injector_client',
             output='screen' ),
-
+        Node(
+            package='ros1_bridge',
+            executable='dynamic_bridge',
+            name='ros1_bridge',
+            output='screen'),
         ])
         
         
