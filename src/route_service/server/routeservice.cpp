@@ -24,8 +24,8 @@
 
 //boost::filesystem::path dbfolder="/home/airon/Desktop/RouteDatabase";
 //std::string dbfolder_string="/home/airon/Desktop/RouteDatabase/";
-boost::filesystem::path dbfolder="/home/yeojun/Desktop/RouteDatabase";
-std::string dbfolder_string="/home/yeojun/Desktop/RouteDatabase/";
+boost::filesystem::path dbfolder="/home/user/RouteDatabase";
+std::string dbfolder_string="/home/user/RouteDatabase/";
 
 double deg2rad(double deg) {
 return (deg * PI / 180);
