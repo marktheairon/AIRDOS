@@ -7,6 +7,7 @@ project(airdos)
 ## is used, also find other catkin packages
 # find dependencies
 
+set(PYTHON_EXCUTABLE /usr/bin/python3)
 
 find_package(catkin REQUIRED COMPONENTS 
       roscpp
