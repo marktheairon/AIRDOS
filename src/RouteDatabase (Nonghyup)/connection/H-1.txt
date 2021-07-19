@@ -1,0 +1,4 @@
+#	Connected to	cost	route
+	I-1		0.038	aaa
+	E-1		0.044	aaa
+	G-1		0.039	aaa
