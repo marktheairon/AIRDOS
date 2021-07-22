@@ -1,4 +1,0 @@
-#	Connected to	cost	route
-	B-1		0.039	aaa
-	D-1		0.084	aaa
-	F-1		0.045	aaa
